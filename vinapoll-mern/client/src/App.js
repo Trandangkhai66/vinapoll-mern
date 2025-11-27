@@ -8,7 +8,7 @@ import {
 } from 'lucide-react';
 
 // Use REACT_APP_API_URL in production (Netlify) and fall back to localhost for dev
-const API_URL = 'https://vinapoll-mern.onrender.com';s
+const API_URL = 'https://vinapoll-mern.onrender.com';
 const socket = io(API_URL);
 
 // --- UTILITIES (Download Logic) ---
