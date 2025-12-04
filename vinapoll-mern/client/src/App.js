@@ -150,6 +150,7 @@ export default function App() {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [newQuestion, setNewQuestion] = useState('');
   const [newOptions, setNewOptions] = useState(['', '']);
+  const [showShare, setShowShare] = useState(false);
 
   useEffect(() => {
     let storedId = localStorage.getItem('poll_user_id');
@@ -210,13 +211,83 @@ export default function App() {
         </div>
       </header>
 
-      <main className="max-w-5xl mx-auto px-4 py-10">
+      <main className="max-w-6xl mx-auto px-4 py-10">
         {view === 'HOME' ? (
           <div className="animate-in fade-in slide-in-from-bottom-2 duration-500">
-            <div className="mb-10"><h1 className="text-4xl font-extrabold bg-gradient-to-r from-purple-900 via-slate-900 to-pink-900 bg-clip-text text-transparent mb-3">Khám phá & Bình chọn</h1><p className="text-lg text-slate-600">Tham gia các cuộc thăm dò ý kiến thời gian thực với cộng đồng.</p></div>
-            {loading ? <div className="grid md:grid-cols-2 gap-7"><SkeletonCard/><SkeletonCard/></div> : (
-              <div className="grid md:grid-cols-2 gap-7">
-                {polls.map(poll => <PollCard key={poll._id} poll={poll} userId={userId} onVote={handleVote} onLike={handleLike} onViewDetail={(id) => window.location.hash = `poll/${id}`} />)}
+            <div className="mb-12">
+              <h1 className="text-5xl font-extrabold bg-gradient-to-r from-purple-900 via-slate-900 to-pink-900 bg-clip-text text-transparent mb-3">Khám phá Thăm Dò</h1>
+              <p className="text-lg text-slate-600">Tham gia các cuộc thăm dò ý kiến thời gian thực, chia sẻ ý kiến của bạn</p>
+            </div>
+            {loading ? (
+              <div className="space-y-4">
+                <SkeletonCard/><SkeletonCard/><SkeletonCard/>
+              </div>
+            ) : (
+              <div className="space-y-4">
+                {polls.length > 0 ? (
+                  polls.map(poll => {
+                    const hasVoted = poll.votedBy.includes(userId);
+                    return (
+                      <div key={poll._id} className="bg-white rounded-2xl border border-slate-200 shadow-md p-6 hover:shadow-xl transition-all">
+                        <div className="flex flex-col lg:flex-row gap-8">
+                          <div className="flex-1">
+                            <div className="flex items-start justify-between gap-4 mb-5">
+                              <h3 className="text-2xl font-bold text-slate-900 cursor-pointer hover:text-transparent bg-gradient-to-r from-purple-600 to-pink-600 hover:bg-clip-text transition-all" onClick={() => window.location.hash = `poll/${poll._id}`}>
+                                {poll.question}
+                              </h3>
+                              {hasVoted && <span className="bg-gradient-to-r from-emerald-100 to-green-100 text-emerald-700 text-xs px-3 py-1.5 rounded-full font-bold flex gap-1.5 items-center whitespace-nowrap"><CheckCircle2 size={12} /> Đã bầu</span>}
+                            </div>
+                            <div className="space-y-3">
+                              {poll.options.map(opt => {
+                                const percentage = poll.totalVotes === 0 ? 0 : Math.round((opt.votes / poll.totalVotes) * 100);
+                                return hasVoted ? (
+                                  <div key={opt._id} className="relative">
+                                    <div className="flex justify-between text-sm mb-2">
+                                      <span className="font-semibold text-slate-800">{opt.text}</span>
+                                      <span className="font-bold text-purple-600">{percentage}%</span>
+                                    </div>
+                                    <div className="w-full bg-slate-100 rounded-full h-3 overflow-hidden border border-slate-200"><div className="bg-gradient-to-r from-purple-500 via-pink-500 to-red-500 h-full transition-all duration-1000" style={{ width: `${percentage}%` }} /></div>
+                                    <div className="text-xs text-slate-500 mt-1 text-right">{opt.votes} phiếu</div>
+                                  </div>
+                                ) : (
+                                  <button key={opt._id} onClick={() => handleVote(poll._id, opt._id)} className="w-full text-left p-4 rounded-xl border border-slate-200 hover:border-purple-400 hover:bg-purple-50 transition-all font-medium text-slate-800 group flex justify-between items-center">
+                                    <span>{opt.text}</span>
+                                    <span className="text-purple-400 group-hover:text-purple-600 opacity-0 group-hover:opacity-100 transition-opacity">→</span>
+                                  </button>
+                                );
+                              })}
+                            </div>
+                          </div>
+                          <div className="flex flex-col items-center justify-between lg:border-l lg:border-slate-200 lg:pl-8 min-w-fit">
+                            <div className="text-center mb-6 lg:mb-0">
+                              <div className="text-5xl font-bold text-purple-600 mb-2">{poll.totalVotes}</div>
+                              <div className="text-sm text-slate-500 font-medium">Tổng phiếu</div>
+                            </div>
+                            <div className="flex gap-2 w-full lg:flex-col">
+                              <button onClick={() => handleLike(poll._id)} className={`flex-1 lg:w-12 lg:h-12 flex items-center justify-center rounded-lg transition-all ${poll.likedBy.includes(userId) ? 'bg-pink-100 text-pink-600' : 'bg-slate-100 text-slate-600 hover:bg-pink-100 hover:text-pink-600'}`}>
+                                <Heart size={20} fill={poll.likedBy.includes(userId) ? "currentColor" : "none"} />
+                              </button>
+                              <button onClick={() => window.location.hash = `poll/${poll._id}`} className="flex-1 lg:w-12 lg:h-12 flex items-center justify-center rounded-lg bg-slate-100 hover:bg-purple-100 text-slate-600 hover:text-purple-600 transition-all"><LinkIcon size={20}/></button>
+                              <button onClick={() => setShowShare(true)} className="flex-1 lg:w-12 lg:h-12 flex items-center justify-center rounded-lg bg-slate-100 hover:bg-blue-100 text-slate-600 hover:text-blue-600 transition-all"><Share2 size={20}/></button>
+                              {hasVoted && (
+                                <>
+                                  <button onClick={() => downloadCSV(poll)} className="flex-1 lg:w-12 lg:h-12 flex items-center justify-center rounded-lg bg-slate-100 hover:bg-green-100 text-slate-600 hover:text-green-600 transition-all"><FileText size={20}/></button>
+                                  <button onClick={() => downloadChartAsImage(poll)} className="flex-1 lg:w-12 lg:h-12 flex items-center justify-center rounded-lg bg-slate-100 hover:bg-indigo-100 text-slate-600 hover:text-indigo-600 transition-all"><ImageIcon size={20}/></button>
+                                </>
+                              )}
+                            </div>
+                            <div className="text-sm text-slate-400 mt-6 lg:mt-4 text-center">{poll.likes} ❤️</div>
+                          </div>
+                        </div>
+                      </div>
+                    );
+                  })
+                ) : (
+                  <div className="text-center py-20 bg-white rounded-3xl border-2 border-slate-100 shadow-md">
+                    <BarChart3 size={48} className="mx-auto text-slate-300 mb-4" />
+                    <p className="text-slate-500 font-medium">Chưa có thăm dò nào, hãy tạo một thăm dò mới!</p>
+                  </div>
+                )}
               </div>
             )}
           </div>
