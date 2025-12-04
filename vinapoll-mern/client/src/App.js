@@ -56,9 +56,9 @@ const downloadChartAsImage = (poll) => {
 
 // --- COMPONENTS ---
 const SkeletonCard = () => (
-  <div className="bg-white rounded-xl border border-slate-200 p-6 shadow-sm animate-pulse">
-    <div className="h-6 bg-slate-200 rounded w-3/4 mb-6"></div>
-    <div className="space-y-3"><div className="h-10 bg-slate-100 rounded w-full"></div><div className="h-10 bg-slate-100 rounded w-full"></div></div>
+  <div className="bg-white rounded-2xl border border-slate-200 p-6 shadow-md animate-pulse">
+    <div className="h-7 bg-gradient-to-r from-slate-200 to-slate-100 rounded-lg w-3/4 mb-6"></div>
+    <div className="space-y-3"><div className="h-11 bg-gradient-to-r from-slate-100 to-slate-50 rounded-lg w-full"></div><div className="h-11 bg-gradient-to-r from-slate-100 to-slate-50 rounded-lg w-full"></div></div>
   </div>
 );
 
@@ -74,14 +74,14 @@ const ShareModal = ({ poll, onClose }) => {
     window.open(url, '_blank', 'width=600,height=450');
   };
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/60 p-4 animate-in fade-in">
-      <div className="bg-white rounded-xl shadow-2xl w-full max-w-md p-6 space-y-4">
-        <div className="flex justify-between items-center"><h3 className="font-bold flex gap-2"><Share2 size={18}/> Chia sẻ</h3><button onClick={onClose}><X size={20}/></button></div>
-        <div className="flex gap-2"><div className="flex-1 bg-slate-100 border p-2 text-sm truncate rounded">{shareUrl}</div><button onClick={handleCopy} className="bg-slate-800 text-white px-3 rounded flex items-center gap-1">{copied ? <CheckCircle2 size={14}/> : <Copy size={14}/>}</button></div>
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/60 p-4 animate-in fade-in backdrop-blur-sm">
+      <div className="bg-white rounded-2xl shadow-2xl w-full max-w-md p-7 space-y-5 border border-slate-100">
+        <div className="flex justify-between items-center"><h3 className="font-bold text-lg flex gap-2 text-slate-800"><Share2 size={18}/> Chia sẻ</h3><button onClick={onClose} className="text-slate-400 hover:text-slate-600"><X size={20}/></button></div>
+        <div className="flex gap-2"><div className="flex-1 bg-gradient-to-r from-slate-50 to-slate-100 border border-slate-200 p-3 text-sm truncate rounded-lg font-mono text-slate-600">{shareUrl}</div><button onClick={handleCopy} className="bg-gradient-to-br from-purple-600 to-pink-600 text-white px-4 py-2 rounded-lg flex items-center gap-1 hover:shadow-lg transition-shadow font-medium">{copied ? <CheckCircle2 size={14}/> : <Copy size={14}/>}</button></div>
         <div className="grid grid-cols-3 gap-3">
-          <button onClick={()=>openSocial('fb')} className="border p-2 rounded hover:bg-blue-50 text-sm font-medium">Facebook</button>
-          <button onClick={()=>openSocial('tw')} className="border p-2 rounded hover:bg-sky-50 text-sm font-medium">Twitter</button>
-          <button onClick={()=>openSocial('in')} className="border p-2 rounded hover:bg-blue-50 text-sm font-medium">LinkedIn</button>
+          <button onClick={()=>openSocial('fb')} className="border border-slate-200 p-3 rounded-lg hover:bg-blue-50 hover:border-blue-300 text-sm font-medium transition-all text-slate-700">Facebook</button>
+          <button onClick={()=>openSocial('tw')} className="border border-slate-200 p-3 rounded-lg hover:bg-sky-50 hover:border-sky-300 text-sm font-medium transition-all text-slate-700">Twitter</button>
+          <button onClick={()=>openSocial('in')} className="border border-slate-200 p-3 rounded-lg hover:bg-blue-50 hover:border-blue-300 text-sm font-medium transition-all text-slate-700">LinkedIn</button>
         </div>
       </div>
     </div>
@@ -94,42 +94,43 @@ const PollCard = ({ poll, userId, onVote, onLike, onViewDetail, isDetail = false
   const [showShare, setShowShare] = useState(false);
 
   return (
-    <div className={`bg-white border-slate-200 shadow-sm flex flex-col h-full ${isDetail ? 'rounded-2xl border shadow-lg' : 'rounded-xl border hover:shadow-md transition-shadow'}`}>
-      <div className="p-6 flex-1">
-        <div className="flex justify-between items-start mb-4 gap-4">
-          <h3 className={`font-bold text-slate-800 ${!isDetail ? 'cursor-pointer hover:text-indigo-600' : 'text-2xl'}`} onClick={() => !isDetail && onViewDetail(poll._id)}>
+    <div className={`bg-white border border-slate-200 shadow-md flex flex-col h-full transition-all hover:shadow-xl ${isDetail ? 'rounded-3xl' : 'rounded-2xl hover:border-purple-300'}`}>
+      <div className="p-7 flex-1">
+        <div className="flex justify-between items-start mb-5 gap-4">
+          <h3 className={`font-bold text-slate-900 ${!isDetail ? 'cursor-pointer hover:text-transparent bg-gradient-to-r from-purple-600 to-pink-600 bg-clip-text transition-all' : 'text-3xl bg-gradient-to-r from-purple-600 to-pink-600 bg-clip-text text-transparent'}`} onClick={() => !isDetail && onViewDetail(poll._id)}>
             {poll.question}
           </h3>
-          {hasVoted && <span className="bg-green-100 text-green-700 text-xs px-2.5 py-1 rounded-full font-bold flex gap-1 items-center shrink-0"><CheckCircle2 size={12} /> Đã bầu</span>}
+          {hasVoted && <span className="bg-gradient-to-r from-emerald-100 to-green-100 text-emerald-700 text-xs px-3 py-1.5 rounded-full font-bold flex gap-1.5 items-center shrink-0"><CheckCircle2 size={12} /> Đã bầu</span>}
         </div>
         <div className="space-y-3">
           {poll.options.map((opt) => {
             const percentage = poll.totalVotes === 0 ? 0 : Math.round((opt.votes / poll.totalVotes) * 100);
             return hasVoted ? (
               <div key={opt._id} className="relative group animate-in fade-in">
-                <div className="flex justify-between text-sm mb-1 text-slate-600 font-medium"><span>{opt.text}</span><span className="font-bold">{percentage}%</span></div>
-                <div className="w-full bg-slate-100 rounded-full h-3 overflow-hidden"><div className="bg-indigo-600 h-full transition-all duration-1000" style={{ width: `${percentage}%` }} /></div>
-                <div className="text-xs text-slate-400 mt-1 text-right">{opt.votes} phiếu</div>
+                <div className="flex justify-between text-sm mb-2 text-slate-700 font-semibold"><span className="text-slate-800">{opt.text}</span><span className="bg-gradient-to-r from-purple-600 to-pink-600 bg-clip-text text-transparent font-bold">{percentage}%</span></div>
+                <div className="w-full bg-gradient-to-r from-slate-100 to-slate-50 rounded-full h-3 overflow-hidden border border-slate-200"><div className="bg-gradient-to-r from-purple-500 via-pink-500 to-red-500 h-full transition-all duration-1000" style={{ width: `${percentage}%` }} /></div>
+                <div className="text-xs text-slate-500 mt-1.5 text-right font-medium">{opt.votes} phiếu</div>
               </div>
             ) : (
-              <button key={opt._id} onClick={() => onVote(poll._id, opt._id)} className="w-full text-left p-3.5 rounded-lg border hover:border-indigo-500 hover:bg-indigo-50 transition-all flex justify-between group">
-                <span className="font-medium text-slate-700">{opt.text}</span>
+              <button key={opt._id} onClick={() => onVote(poll._id, opt._id)} className="w-full text-left p-4 rounded-xl border border-slate-200 hover:border-purple-400 hover:bg-gradient-to-br hover:from-purple-50 to-pink-50 transition-all flex justify-between group shadow-sm hover:shadow-md">
+                <span className="font-medium text-slate-800 group-hover:text-purple-700">{opt.text}</span>
+                <div className="text-purple-400 group-hover:text-purple-600 opacity-0 group-hover:opacity-100 transition-opacity">→</div>
               </button>
             );
           })}
         </div>
       </div>
-      <div className="bg-slate-50/80 px-5 py-3 border-t border-slate-100 flex items-center justify-between rounded-b-xl">
-        <button onClick={() => onLike(poll._id)} className={`flex items-center gap-1.5 text-sm font-bold px-2 py-1 rounded transition-colors ${isLiked ? 'text-pink-500' : 'text-slate-500 hover:text-pink-500'}`}>
+      <div className="bg-gradient-to-r from-slate-50 to-purple-50 px-6 py-4 border-t border-slate-100 flex items-center justify-between rounded-b-2xl">
+        <button onClick={() => onLike(poll._id)} className={`flex items-center gap-2 text-sm font-bold px-3 py-2 rounded-lg transition-all ${isLiked ? 'text-pink-600 bg-pink-100' : 'text-slate-600 hover:text-pink-600 hover:bg-pink-100'}`}>
           <Heart size={18} fill={isLiked ? "currentColor" : "none"} /> {poll.likes}
         </button>
         <div className="flex items-center gap-2">
-          {!isDetail && <button onClick={() => onViewDetail(poll._id)} className="p-2 text-slate-400 hover:text-indigo-600 rounded-full hover:bg-indigo-50"><LinkIcon size={18}/></button>}
-          <button onClick={() => setShowShare(true)} className="p-2 text-slate-400 hover:text-indigo-600 rounded-full hover:bg-indigo-50"><Share2 size={18}/></button>
+          {!isDetail && <button onClick={() => onViewDetail(poll._id)} className="p-2.5 text-slate-500 hover:text-purple-600 rounded-lg hover:bg-purple-100 transition-all"><LinkIcon size={18}/></button>}
+          <button onClick={() => setShowShare(true)} className="p-2.5 text-slate-500 hover:text-purple-600 rounded-lg hover:bg-purple-100 transition-all"><Share2 size={18}/></button>
           {hasVoted && (
-            <div className="flex gap-1 border-l pl-2 ml-1">
-              <button onClick={() => downloadCSV(poll)} className="p-2 text-slate-400 hover:text-green-600 rounded-full"><FileText size={18}/></button>
-              <button onClick={() => downloadChartAsImage(poll)} className="p-2 text-slate-400 hover:text-indigo-600 rounded-full"><ImageIcon size={18}/></button>
+            <div className="flex gap-1 border-l border-slate-200 pl-3 ml-1">
+              <button onClick={() => downloadCSV(poll)} className="p-2.5 text-slate-500 hover:text-green-600 rounded-lg hover:bg-green-100 transition-all"><FileText size={18}/></button>
+              <button onClick={() => downloadChartAsImage(poll)} className="p-2.5 text-slate-500 hover:text-purple-600 rounded-lg hover:bg-purple-100 transition-all"><ImageIcon size={18}/></button>
             </div>
           )}
         </div>
@@ -198,51 +199,51 @@ export default function App() {
   const currentPoll = polls.find(p => p._id === currentPollId);
 
   return (
-    <div className="min-h-screen bg-slate-50 font-sans text-slate-900 pb-20">
-      <header className="bg-white/90 backdrop-blur-md border-b sticky top-0 z-40 transition-all">
+    <div className="min-h-screen bg-gradient-to-br from-slate-50 via-purple-50 to-pink-50 font-sans text-slate-900 pb-20">
+      <header className="bg-white/80 backdrop-blur-xl border-b border-slate-200 sticky top-0 z-40 transition-all shadow-sm">
         <div className="max-w-5xl mx-auto px-4 h-16 flex items-center justify-between">
-          <div className="flex items-center gap-2 cursor-pointer" onClick={() => window.location.hash = ''}>
-            <div className="bg-indigo-600 p-1.5 rounded-lg text-white"><BarChart3 size={24} /></div>
-            <span className="text-xl font-bold">Vina<span className="text-indigo-600">Poll</span></span>
+          <div className="flex items-center gap-3 cursor-pointer hover:opacity-80 transition-opacity" onClick={() => window.location.hash = ''}>
+            <div className="bg-gradient-to-br from-purple-600 to-pink-600 p-2 rounded-xl text-white shadow-lg"><BarChart3 size={24} /></div>
+            <span className="text-2xl font-bold tracking-tight">Vina<span className="bg-gradient-to-r from-purple-600 to-pink-600 bg-clip-text text-transparent">Poll</span></span>
           </div>
-          {view === 'HOME' && <button onClick={() => setIsModalOpen(true)} className="bg-indigo-600 hover:bg-indigo-700 text-white px-4 py-2 rounded-lg text-sm font-medium flex items-center gap-2"><Plus size={18}/> Tạo Thăm Dò</button>}
+          {view === 'HOME' && <button onClick={() => setIsModalOpen(true)} className="bg-gradient-to-r from-purple-600 to-pink-600 hover:shadow-lg text-white px-5 py-2.5 rounded-lg text-sm font-bold flex items-center gap-2 transition-shadow"><Plus size={18}/> Tạo Thăm Dò</button>}
         </div>
       </header>
 
-      <main className="max-w-5xl mx-auto px-4 py-8">
+      <main className="max-w-5xl mx-auto px-4 py-10">
         {view === 'HOME' ? (
           <div className="animate-in fade-in slide-in-from-bottom-2 duration-500">
-            <div className="mb-8"><h1 className="text-3xl font-extrabold text-slate-900 mb-2">Khám phá & Bình chọn</h1><p className="text-slate-500">Tham gia các cuộc thăm dò ý kiến thời gian thực.</p></div>
-            {loading ? <div className="grid md:grid-cols-2 gap-6"><SkeletonCard/><SkeletonCard/></div> : (
-              <div className="grid md:grid-cols-2 gap-6">
+            <div className="mb-10"><h1 className="text-4xl font-extrabold bg-gradient-to-r from-purple-900 via-slate-900 to-pink-900 bg-clip-text text-transparent mb-3">Khám phá & Bình chọn</h1><p className="text-lg text-slate-600">Tham gia các cuộc thăm dò ý kiến thời gian thực với cộng đồng.</p></div>
+            {loading ? <div className="grid md:grid-cols-2 gap-7"><SkeletonCard/><SkeletonCard/></div> : (
+              <div className="grid md:grid-cols-2 gap-7">
                 {polls.map(poll => <PollCard key={poll._id} poll={poll} userId={userId} onVote={handleVote} onLike={handleLike} onViewDetail={(id) => window.location.hash = `poll/${id}`} />)}
               </div>
             )}
           </div>
         ) : (
           <div className="max-w-2xl mx-auto animate-in slide-in-from-right-8 fade-in">
-            <button onClick={() => window.location.hash = ''} className="mb-6 flex items-center gap-2 text-slate-500 hover:text-indigo-600 font-medium group"><ArrowLeft size={20} className="group-hover:-translate-x-1 transition"/> Quay lại danh sách</button>
+            <button onClick={() => window.location.hash = ''} className="mb-8 flex items-center gap-2 text-slate-600 hover:text-purple-600 font-semibold group transition-colors"><ArrowLeft size={20} className="group-hover:-translate-x-1 transition"/> Quay lại danh sách</button>
             {currentPoll ? <PollCard poll={currentPoll} userId={userId} onVote={handleVote} onLike={handleLike} isDetail={true} /> : 
-            <div className="text-center py-20 bg-white rounded-xl border"><AlertCircle className="mx-auto text-red-500 mb-4" size={32}/>Không tìm thấy Poll</div>}
+            <div className="text-center py-20 bg-white rounded-3xl border-2 border-slate-100 shadow-md"><AlertCircle className="mx-auto text-red-500 mb-4" size={32}/>Không tìm thấy Poll</div>}
           </div>
         )}
       </main>
 
       {isModalOpen && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/60 backdrop-blur-sm animate-in zoom-in-95">
-          <div className="bg-white rounded-2xl shadow-2xl w-full max-w-lg overflow-hidden">
-            <div className="px-6 py-4 border-b flex justify-between items-center bg-slate-50"><h3 className="font-bold text-lg text-slate-800">Tạo thăm dò mới</h3><button onClick={() => setIsModalOpen(false)}><X size={20} className="text-slate-400 hover:text-red-500"/></button></div>
-            <form onSubmit={handleCreate} className="p-6 space-y-5">
-              <div><label className="block text-sm font-semibold mb-1.5">Câu hỏi</label><input autoFocus value={newQuestion} onChange={e => setNewQuestion(e.target.value)} className="w-full px-4 py-2.5 border rounded-lg focus:ring-2 focus:ring-indigo-500 outline-none" placeholder="Ví dụ: Ăn trưa món gì?" /></div>
-              <div><label className="block text-sm font-semibold mb-1.5">Lựa chọn</label>
-                <div className="space-y-2.5 max-h-56 overflow-y-auto pr-1">
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/50 backdrop-blur-md animate-in zoom-in-95">
+          <div className="bg-white rounded-3xl shadow-2xl w-full max-w-lg overflow-hidden border border-slate-100">
+            <div className="px-7 py-5 border-b border-slate-100 flex justify-between items-center bg-gradient-to-r from-purple-50 to-pink-50"><h3 className="font-bold text-xl bg-gradient-to-r from-purple-600 to-pink-600 bg-clip-text text-transparent">Tạo thăm dò mới</h3><button onClick={() => setIsModalOpen(false)} className="text-slate-400 hover:text-red-500 hover:bg-red-50 p-1 rounded-lg transition"><X size={20}/></button></div>
+            <form onSubmit={handleCreate} className="p-7 space-y-6">
+              <div><label className="block text-sm font-bold text-slate-800 mb-2.5">Câu hỏi</label><input autoFocus value={newQuestion} onChange={e => setNewQuestion(e.target.value)} className="w-full px-4 py-3 border border-slate-200 rounded-xl focus:ring-2 focus:ring-purple-500 focus:border-transparent outline-none bg-gradient-to-r from-slate-50 to-white" placeholder="Ví dụ: Ăn trưa món gì?" /></div>
+              <div><label className="block text-sm font-bold text-slate-800 mb-2.5">Lựa chọn</label>
+                <div className="space-y-3 max-h-56 overflow-y-auto pr-2">
                   {newOptions.map((opt, i) => (
-                    <div key={i} className="flex gap-2"><input value={opt} onChange={e => {const n=[...newOptions];n[i]=e.target.value;setNewOptions(n)}} className="flex-1 px-4 py-2 border rounded-lg text-sm outline-none focus:border-indigo-500" placeholder={`Lựa chọn ${i+1}`} />{newOptions.length > 2 && <button type="button" onClick={() => setNewOptions(newOptions.filter((_, idx) => idx !== i))} className="text-slate-400 hover:text-red-500"><X size={20}/></button>}</div>
+                    <div key={i} className="flex gap-2.5"><input value={opt} onChange={e => {const n=[...newOptions];n[i]=e.target.value;setNewOptions(n)}} className="flex-1 px-4 py-2.5 border border-slate-200 rounded-lg text-sm outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent bg-gradient-to-r from-slate-50 to-white" placeholder={`Lựa chọn ${i+1}`} />{newOptions.length > 2 && <button type="button" onClick={() => setNewOptions(newOptions.filter((_, idx) => idx !== i))} className="text-slate-400 hover:text-red-500 hover:bg-red-50 p-2 rounded-lg transition"><X size={20}/></button>}</div>
                   ))}
                 </div>
-                {newOptions.length < 5 && <button type="button" onClick={() => setNewOptions([...newOptions, ''])} className="mt-3 text-sm text-indigo-600 font-bold flex items-center gap-1 hover:text-indigo-800"><Plus size={18}/> Thêm lựa chọn</button>}
+                {newOptions.length < 5 && <button type="button" onClick={() => setNewOptions([...newOptions, ''])} className="mt-4 text-sm bg-gradient-to-r from-purple-600 to-pink-600 bg-clip-text text-transparent font-bold flex items-center gap-1.5 hover:opacity-80 transition"><Plus size={18}/> Thêm lựa chọn</button>}
               </div>
-              <div className="flex justify-end pt-3 gap-3 border-t mt-4"><button type="button" onClick={() => setIsModalOpen(false)} className="px-5 py-2.5 text-slate-600 font-medium hover:bg-slate-100 rounded-lg">Hủy</button><button type="submit" className="px-6 py-2.5 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 font-bold shadow-lg">Đăng Poll</button></div>
+              <div className="flex justify-end pt-4 gap-3 border-t border-slate-100 mt-6"><button type="button" onClick={() => setIsModalOpen(false)} className="px-6 py-2.5 text-slate-700 font-semibold hover:bg-slate-100 rounded-lg transition">Hủy</button><button type="submit" className="px-8 py-2.5 bg-gradient-to-r from-purple-600 to-pink-600 text-white rounded-lg hover:shadow-lg font-bold transition-shadow">Đăng Poll</button></div>
             </form>
           </div>
         </div>
